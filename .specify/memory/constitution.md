@@ -1,25 +1,21 @@
 <!--
   Sync Impact Report
   ==================
-  Version change: 0.0.0 (template) → 1.0.0
-  Added principles:
-    - I. CLI-First DNA
-    - II. Atomic, Decoupled, Rollback-able
-    - III. Verification Loop
-    - IV. Confidence Intervals Over Point Estimates
-    - V. Container-Native Development
-    - VI. Agent-Safe Security
-    - VII. Simplicity (YAGNI)
-  Added sections:
-    - Technology Constraints
-    - Development Workflow
-  Removed sections: none (fresh instantiation)
+  Version change: 1.0.0 → 1.1.0 (MINOR: materially expanded Principle VI)
+  Modified principles:
+    - VI. Agent-Safe Security — added Supply Chain Defense + Semantic Threat
+      Awareness subsections (ref: JVO/VirusTotal ClawHub audit 2026-02)
+  Added sections: none
+  Removed sections: none
   Templates requiring updates:
     - .specify/templates/plan-template.md — Constitution Check references ✅ generic
     - .specify/templates/spec-template.md — no constitution-specific refs ✅ ok
     - .specify/templates/tasks-template.md — no constitution-specific refs ✅ ok
     - .specify/templates/checklist-template.md — no constitution-specific refs ✅ ok
     - .specify/templates/agent-file-template.md — no constitution-specific refs ✅ ok
+  Propagated to:
+    - ~/.claude/CLAUDE.md — AI Agent Security DNA section added ✅
+    - IVC CLAUDE.md — Chi security responsibilities added ✅
   Deferred TODOs: none
 -->
 
@@ -106,6 +102,7 @@ drift and enables CI/CD parity.
 When AI agents (Openclaw, Claude Code, n8n) execute actions, security
 boundaries MUST be explicit and enforced.
 
+**Execution Controls**:
 - Openclaw exec policy MUST be `ask: always` with `security: allowlist`.
 - Gateway MUST bind to loopback only — no external network exposure.
 - CLI tools invoked by agents MUST declare read-only vs write capability.
@@ -113,8 +110,27 @@ boundaries MUST be explicit and enforced.
 - No agent may force-push, delete branches, or modify production data
   without explicit human approval.
 
+**Supply Chain Defense** (ref: JVO/VirusTotal ClawHub audit 2026-02):
+- Before installing any Skill/Plugin, MUST verify publisher reputation.
+  Download counts can be faked — do not trust numbers alone.
+- MUST read the full SKILL.md before installation. Any instruction to
+  download and execute external binaries is a red flag.
+- MUST NOT execute Base64-encoded shell commands from untrusted sources.
+- MUST NOT open password-protected ZIPs from Skills without inspection.
+- AI-generated security configs MUST be validated against the tool's
+  actual schema (`openclaw doctor`, `--help`). LLMs hallucinate keys
+  that create a false sense of security.
+
+**Semantic Threat Awareness**:
+- Skills and Markdown instructions ARE potential malware vectors.
+  Traditional antivirus is blind to natural language threats.
+- Periodically audit installed Skills and MCP Servers for anomalies.
+- Multi-layer defense is mandatory — no single control is sufficient.
+
 **Rationale**: AI agents amplify both productivity and blast radius.
 Security defaults MUST be restrictive; relaxation requires justification.
+AI Skills are "natural language malware" when abused — the entire
+30-year traditional security toolchain is blind to this threat class.
 
 ### VII. Simplicity (YAGNI)
 
@@ -199,4 +215,4 @@ Do not push through ambiguity with brute force.
 - **Runtime guidance**: See `CLAUDE.md` at project root for role
   definitions (Allen, Jane, Chi) and IVC Framework details.
 
-**Version**: 1.0.0 | **Ratified**: 2026-02-07 | **Last Amended**: 2026-02-07
+**Version**: 1.1.0 | **Ratified**: 2026-02-07 | **Last Amended**: 2026-02-07
