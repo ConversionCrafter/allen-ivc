@@ -1,0 +1,149 @@
+#!/usr/bin/env python3
+"""ivc-collect — Store external data into IVC CompanyEvents.
+
+First atomic CLI tool in the ivc-* namespace.
+Reads structured JSON (bird, future: news APIs) and POSTs to Payload CMS.
+
+Usage:
+  ivc-collect --help
+  ivc-collect --input tweets.json --company-id 2 --keyword "paypal" --source x-twitter
+  ivc-collect --input tweets.json --company-id 2 --keyword "PYPL" --api http://localhost:3000/api/company-events
+  cat tweets.json | ivc-collect --stdin --company-id 2 --keyword "paypal"
+
+Input format (bird search --json):
+  [{"id": "...", "text": "...", "createdAt": "...", "author": {"username": "...", "name": "..."}}]
+
+Output (stdout): JSON summary {"stored": N, "skipped": N, "errors": N}
+Logs (stderr): per-item status
+"""
+
+import argparse
+import json
+import sys
+import urllib.request
+import urllib.error
+from datetime import datetime, timezone
+
+DEFAULT_API = "http://localhost:3000/api/company-events"
+
+
+def parse_bird_tweet(tweet: dict, keyword: str, company_id: int) -> dict:
+    """Transform a bird JSON tweet into a CompanyEvent payload."""
+    tweet_id = tweet.get("id", "")
+    text = tweet.get("text", "")
+    created_at = tweet.get("createdAt", "")
+    author = tweet.get("author", {})
+    username = author.get("username", "unknown")
+    name = author.get("name", "unknown")
+    url = f"https://x.com/{username}/status/{tweet_id}"
+
+    # Convert Twitter date to ISO
+    try:
+        dt = datetime.strptime(created_at, "%a %b %d %H:%M:%S %z %Y")
+        iso_date = dt.isoformat()
+    except (ValueError, TypeError):
+        iso_date = datetime.now(timezone.utc).isoformat()
+
+    # Title: first 80 chars, single line
+    title_text = text.replace("\n", " ")[:80]
+    title = f"[X/@{username}] {title_text}"
+
+    return {
+        "company": company_id,
+        "event_date": iso_date,
+        "source": "x-twitter",
+        "importance": "medium",
+        "title": title,
+        "summary": text,
+        "raw_content": f"@{username} ({name}): {text}",
+        "source_url": url,
+        "keywords": keyword,
+        "ivc_impact": "pending",
+    }
+
+
+def post_event(api_url: str, event: dict) -> bool:
+    """POST a CompanyEvent to Payload CMS. Returns True on success."""
+    payload = json.dumps(event).encode("utf-8")
+    req = urllib.request.Request(
+        api_url,
+        data=payload,
+        headers={"Content-Type": "application/json"},
+        method="POST",
+    )
+    try:
+        resp = urllib.request.urlopen(req)
+        return resp.status == 201
+    except urllib.error.HTTPError as e:
+        print(f"  ERROR: HTTP {e.code} for {event.get('source_url', '?')}", file=sys.stderr)
+        return False
+    except Exception as e:
+        print(f"  ERROR: {e}", file=sys.stderr)
+        return False
+
+
+def main():
+    parser = argparse.ArgumentParser(
+        prog="ivc-collect",
+        description="Store external data (tweets, news) into IVC CompanyEvents.",
+    )
+    parser.add_argument("--input", help="Path to JSON results file (bird search --json)")
+    parser.add_argument("--stdin", action="store_true", help="Read JSON from stdin")
+    parser.add_argument("--api", default=DEFAULT_API, help=f"Payload API endpoint (default: {DEFAULT_API})")
+    parser.add_argument("--company-id", type=int, required=True, help="Company ID in Payload CMS")
+    parser.add_argument("--keyword", required=True, help="Search keyword used")
+    parser.add_argument("--source", default="x-twitter", help="Event source type (default: x-twitter)")
+    parser.add_argument("--dry-run", action="store_true", help="Parse and validate without posting")
+    parser.add_argument("--json", action="store_true", dest="json_output", help="Output JSON summary to stdout")
+    args = parser.parse_args()
+
+    # Read input
+    if args.stdin:
+        raw = sys.stdin.read()
+    elif args.input:
+        try:
+            with open(args.input, "r") as f:
+                raw = f.read()
+        except FileNotFoundError:
+            print(f"ERROR: File not found: {args.input}", file=sys.stderr)
+            sys.exit(1)
+    else:
+        parser.error("Provide --input FILE or --stdin")
+
+    try:
+        tweets = json.loads(raw)
+    except json.JSONDecodeError:
+        tweets = []
+
+    if not isinstance(tweets, list):
+        tweets = []
+
+    stored = 0
+    skipped = 0
+    errors = 0
+
+    for t in tweets:
+        event = parse_bird_tweet(t, args.keyword, args.company_id)
+
+        if args.dry_run:
+            print(f"  DRY-RUN: {event['source_url']}", file=sys.stderr)
+            skipped += 1
+            continue
+
+        if post_event(args.api, event):
+            stored += 1
+            print(f"  STORED: {event['source_url']}", file=sys.stderr)
+        else:
+            errors += 1
+
+    summary = {"stored": stored, "skipped": skipped, "errors": errors, "total": len(tweets)}
+
+    if args.json_output:
+        print(json.dumps(summary))
+    else:
+        # Backward compatible: just print stored count (used by collect-x-intel.sh)
+        print(stored)
+
+
+if __name__ == "__main__":
+    main()

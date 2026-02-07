@@ -41,8 +41,8 @@ for keyword in "paypal" "PYPL"; do
   # Save bird JSON to temp file
   "$BIRD" search "$keyword" -n "$MAX_RESULTS" --json > "$TMP_DIR/results.json" 2>/dev/null || echo "[]" > "$TMP_DIR/results.json"
 
-  # Process with Python using temp file
-  stored=$("$PYTHON" "$SCRIPT_DIR/process-tweets.py" \
+  # Process with ivc-collect CLI tool
+  stored=$("$PYTHON" "$SCRIPT_DIR/ivc-collect" \
     --input "$TMP_DIR/results.json" \
     --api "$PAYLOAD_API" \
     --company-id "$PAYPAL_COMPANY_ID" \
