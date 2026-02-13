@@ -1,0 +1,9 @@
+Metadata-Version: 2.4
+Name: ivco-calc
+Version: 0.1.0
+Summary: IVCO calculation engine — three-tier calibration + three-stage DCF
+Requires-Python: >=3.10
+Requires-Dist: click>=8.0
+Provides-Extra: dev
+Requires-Dist: pytest>=7.0; extra == "dev"
+Requires-Dist: pytest-cov; extra == "dev"

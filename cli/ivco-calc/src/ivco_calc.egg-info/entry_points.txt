@@ -1,0 +1,2 @@
+[console_scripts]
+ivco = ivco_calc.cli:cli
