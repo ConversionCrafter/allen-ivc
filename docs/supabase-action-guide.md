@@ -2,7 +2,7 @@
 
 > **版本**: 1.0.0 | **日期**: 2026-02-07 | **來源**: NotebookLM 知識蒸餾 + Claude Code 實測驗證
 >
-> 本指南專為 Allen 的 IVC Calculator 專案量身打造。
+> 本指南專為 Allen 的 IVCO 專案量身打造。
 > 從 Docker PostgreSQL 15 遷移至 Supabase 的完整操作手冊。
 
 ---
@@ -53,7 +53,7 @@
 │  → Supavisor Session Mode (port 5432, IPv4)                        │
 │  → 同上格式（Docker 容器預設走 IPv4）                                │
 ├─────────────────────────────────────────────────────────────────────┤
-│  ivc-collect / Python CLI                                           │
+│  ivco-collect / Python CLI                                          │
 │  → Supabase REST API (https://[ref].supabase.co) 或                │
 │  → Payload CMS API (http://localhost:3000/api)                     │
 └─────────────────────────────────────────────────────────────────────┘
@@ -85,7 +85,7 @@ nc -zv aws-0-ap-northeast-1.pooler.supabase.com 5432
 nc -zv aws-0-ap-northeast-1.pooler.supabase.com 6543
 ```
 
-> **IVC 專案適用建議**: 使用 Supavisor Session Mode (Port 5432) 連接 Singapore region。
+> **IVCO 專案適用建議**: 使用 Supavisor Session Mode (Port 5432) 連接 Singapore region。
 > 這能省下 $4/月 IPv4 add-on，同時完美支援 Payload CMS 的長連線需求。
 
 ---
@@ -106,8 +106,8 @@ supabase --version
 # 登入（會打開瀏覽器授權，Token 存於本機）
 supabase login
 
-# 在 IVC 專案根目錄初始化（會建立 supabase/ 目錄）
-cd /Users/allenchenmac/AI-Workspace/projects/allen-ivc
+# 在 IVCO 專案根目錄初始化（會建立 supabase/ 目錄）
+cd /Users/allenchenmac/AI-Workspace/projects/allen-ivco
 supabase init
 ```
 
@@ -156,7 +156,7 @@ supabase db diff
 | 生成 TypeScript 型別 | `supabase gen types typescript` | Next.js 前端用 |
 | 查看本地狀態 | `supabase status` | 列出所有服務的 URL 和 Key |
 
-> **IVC 專案適用建議**: 由於 Payload CMS 管理自己的 Schema（透過 `payload_migrations` 表），
+> **IVCO 專案適用建議**: 由於 Payload CMS 管理自己的 Schema（透過 `payload_migrations` 表），
 > Supabase CLI 的 migration 系統與 Payload 的 migration 系統是**獨立的**。
 > 初期以 Payload 為主，Supabase CLI 作為輔助工具（檢查狀態、備份、type gen）。
 
@@ -168,7 +168,7 @@ supabase db diff
 
 ### 3.1 遷移前 Checklist
 
-- [ ] 停止所有寫入：暫停 n8n cron jobs、停止 `ivc-collect` 腳本
+- [ ] 停止所有寫入：暫停 n8n cron jobs、停止 `ivco-collect` 腳本
 - [ ] 確認 Payload 版本一致：本地與部署環境的 Payload 版本必須相同
 - [ ] 檢查未執行的 Migration：`npm run payload migrate:status`
 - [ ] 備份現有 Docker 數據（見下方指令）
@@ -179,15 +179,15 @@ supabase db diff
 
 ```bash
 # 完整備份（Custom format，最穩健）
-pg_dump -h localhost -p 5433 -U ivc_user -Fc ivc_dev \
-  > /Users/allenchenmac/AI-Workspace/memory/backups/ivc_dev_$(date +%F).dump
+pg_dump -h localhost -p 5433 -U ivco_user -Fc ivco_dev \
+  > /Users/allenchenmac/AI-Workspace/memory/backups/ivco_dev_$(date +%F).dump
 
 # 驗證備份檔案大小
-ls -lh /Users/allenchenmac/AI-Workspace/memory/backups/ivc_dev_*.dump
+ls -lh /Users/allenchenmac/AI-Workspace/memory/backups/ivco_dev_*.dump
 
 # 可選：同時產生 SQL 文字備份（方便人工檢視）
-pg_dump -h localhost -p 5433 -U ivc_user --no-owner --no-acl ivc_dev \
-  > /Users/allenchenmac/AI-Workspace/memory/backups/ivc_dev_$(date +%F).sql
+pg_dump -h localhost -p 5433 -U ivco_user --no-owner --no-acl ivco_dev \
+  > /Users/allenchenmac/AI-Workspace/memory/backups/ivco_dev_$(date +%F).sql
 ```
 
 ### 3.3 還原至 Supabase
@@ -204,12 +204,12 @@ pg_restore \
   --no-acl \
   --clean \
   --if-exists \
-  /Users/allenchenmac/AI-Workspace/memory/backups/ivc_dev_2026-02-07.dump
+  /Users/allenchenmac/AI-Workspace/memory/backups/ivco_dev_2026-02-07.dump
 
 # 系統會要求輸入 Database Password（建立 Supabase 專案時設定的密碼）
 ```
 
-**`--no-owner --no-acl` 的作用**：忽略本地 Docker 的 `ivc_user` 權限，
+**`--no-owner --no-acl` 的作用**：忽略本地 Docker 的 `ivco_user` 權限，
 用 Supabase 的 `postgres` 超級用戶接管所有物件。
 
 **`--clean --if-exists` 的作用**：先 DROP 再 CREATE，確保冪等（可重複執行）。
@@ -257,7 +257,7 @@ docker compose up -d
 # npm run dev — 一切如常
 ```
 
-> **IVC 專案適用建議**: 採用全庫遷移，不要手動同步 Schema。
+> **IVCO 專案適用建議**: 採用全庫遷移，不要手動同步 Schema。
 > `pg_dump -Fc` 能完美處理 Foreign Key 約束順序。遷移失敗可一秒回到 Docker。
 
 ---
@@ -305,7 +305,7 @@ CREATE POLICY "Public read access" ON company_events
 | Payload 正常但前端空白 | Payload 繞過 RLS，前端不繞過 | 為 anon role 加 Policy |
 | 寫入被拒絕 | RLS 阻擋了 INSERT/UPDATE | 確認 Policy 涵蓋寫入操作 |
 
-> **IVC 專案適用建議**: 初期對所有 Table **不啟用 RLS**，避免遷移除錯困難。
+> **IVCO 專案適用建議**: 初期對所有 Table **不啟用 RLS**，避免遷移除錯困難。
 > 等到需要前端直接拉資料時再鎖緊權限。
 
 ---
@@ -373,7 +373,7 @@ db: postgresAdapter({
 IVC 專案只有 Payload CMS + n8n + 偶爾的 psql 手動連接，
 200 個 Pooler 連線數遠遠足夠。
 
-> **IVC 專案適用建議**: 使用 Session Pooler (port 5432)。
+> **IVCO 專案適用建議**: 使用 Session Pooler (port 5432)。
 > Payload config 不需要改，只切換 DATABASE_URL 環境變數。
 
 ---
@@ -403,9 +403,9 @@ IVC 專案只有 Payload CMS + n8n + 偶爾的 psql 手動連接，
 | 已有設定 | Docker 容器已運行 | 需重新建立 |
 | 適用場景 | 複雜工作流 | 簡單 API 端點 |
 
-**決策**: 繼續用 n8n + Python CLI。不需要為了 Edge Functions 重寫 `ivc-collect`。
+**決策**: 繼續用 n8n + Python CLI。不需要為了 Edge Functions 重寫 `ivco-collect`。
 
-> **IVC 專案適用建議**: 將 Supabase 純粹作為 **PostgreSQL 雲端資料庫**使用。
+> **IVCO 專案適用建議**: 將 Supabase 純粹作為 **PostgreSQL 雲端資料庫**使用。
 > Auth、Storage、Edge Functions 全部忽略，保持架構簡單。
 
 ---
@@ -419,7 +419,7 @@ IVC 專案只有 Payload CMS + n8n + 偶爾的 psql 手動連接，
 > **重要**: Supabase Free Plan 在 **7 天無活動後自動暫停資料庫**。
 > 暫停後需要手動從 Dashboard 恢復，恢復需要數分鐘。
 
-**對 IVC 的影響**：
+**對 IVCO 的影響**：
 - 你的 cron job（每日 3 次 X 情報收集）如果連續 7 天全部失敗（例如 Bird CLI cookie 過期），
   Supabase DB 會被暫停，導致 Payload CMS 也無法啟動。
 - **Free Plan 不適合生產環境**。
@@ -432,7 +432,7 @@ IVC 專案只有 Payload CMS + n8n + 偶爾的 psql 手動連接，
 | Pro Plan | $25 | 生產環境（無暫停、8GB DB、每日備份） |
 | Pro + IPv4 Add-on | $29 | 如果需要 Direct Connection（但 Pooler 已足夠） |
 
-IVC 專案的數據量估算：
+IVCO 專案的數據量估算：
 - Companies: ~10 筆 → 極小
 - CompanyEvents: 每日 ~18 筆（3 次 × 2 關鍵字 × 3 筆）→ 年 ~6,500 筆 → ~10MB
 - Financial_Data: 未來 → 每公司 ~100 筆年度數據 → 極小
@@ -467,7 +467,7 @@ find /Users/allenchenmac/AI-Workspace/memory/backups/ \
 
 但這是 workaround，不是長久之計。生產環境請升級 Pro Plan。
 
-> **IVC 專案適用建議**: 初期測試用 Free Plan + keep-alive cron。
+> **IVCO 專案適用建議**: 初期測試用 Free Plan + keep-alive cron。
 > 確認遷移成功後升級 Pro Plan ($25/月)，消除暫停風險。
 
 ---
@@ -487,7 +487,7 @@ find /Users/allenchenmac/AI-Workspace/memory/backups/ \
 ### 8.2 環境變數隔離（Agent-Safe）
 
 ```
-allen-ivc/
+allen-ivco/
 ├── cms/.env                 # 本地開發（Docker PG）— gitignored
 ├── cms/.env.production      # Supabase 生產 — gitignored
 ├── cms/.env.example         # 只有 key 名稱，無值 — 可 commit
@@ -501,7 +501,7 @@ allen-ivc/
 
 ```bash
 # Development (Docker PostgreSQL)
-DATABASE_URL=postgresql://ivc_user:ivc_password@db:5432/ivc_dev
+DATABASE_URL=postgresql://ivco_user:ivco_password@db:5432/ivco_dev
 
 # Production (Supabase Session Pooler)
 # DATABASE_URL=postgresql://postgres.[PROJECT_REF]:[PASSWORD]@aws-0-ap-northeast-1.pooler.supabase.com:5432/postgres
@@ -517,7 +517,7 @@ PAYLOAD_SECRET=YOUR_SECRET_HERE
 - [ ] Supabase Dashboard 密碼不存在任何純文字檔案中
 - [ ] `service_role` key 只用於伺服器端，永不暴露至前端
 
-> **IVC 專案適用建議**: 遵循現有的 Constitution Principle VI (Agent-Safe Security)。
+> **IVCO 專案適用建議**: 遵循現有的 Constitution Principle VI (Agent-Safe Security)。
 > 新增 Supabase 相關的 secrets 到同一套管理流程。
 
 ---
@@ -537,8 +537,8 @@ PAYLOAD_SECRET=YOUR_SECRET_HERE
 
 ### Phase 2: 遷移數據
 
-- [ ] 停止 n8n cron jobs 和 `ivc-collect` 腳本
-- [ ] `pg_dump -h localhost -p 5433 -U ivc_user -Fc ivc_dev > ivc_dev.dump`
+- [ ] 停止 n8n cron jobs 和 `ivco-collect` 腳本
+- [ ] `pg_dump -h localhost -p 5433 -U ivco_user -Fc ivco_dev > ivco_dev.dump`
 - [ ] `pg_restore` 到 Supabase（見第三章指令）
 - [ ] 用 `psql` 確認 `companies` 和 `payload_migrations` 表都有數據
 - [ ] 在 Supabase Dashboard 確認資料（視覺確認）
@@ -549,13 +549,13 @@ PAYLOAD_SECRET=YOUR_SECRET_HERE
 - [ ] 本地測試: `DATABASE_URL="..." npm run dev`
 - [ ] 開啟 CMS 後台 (localhost:3000/admin)，測試 CRUD
 - [ ] 修改 n8n Postgres Node，指向 Supabase Session Pooler
-- [ ] 重啟 `ivc-collect` cron（如果 ivc-collect 直接寫 DB 而非走 Payload API）
+- [ ] 重啟 `ivco-collect` cron（如果 ivco-collect 直接寫 DB 而非走 Payload API）
 - [ ] 全功能回歸測試
 
 ### Phase 4: 驗證與上線
 
 - [ ] 監控 Payload CMS 日誌 24 小時，確認無 Connection Timeout
-- [ ] 確認 `ivc-collect` Python 腳本能正常寫入
+- [ ] 確認 `ivco-collect` Python 腳本能正常寫入
 - [ ] 設定每日備份 cron（見第七章）
 - [ ] 決定是否升級 Pro Plan
 - [ ] 更新 `CLAUDE.md` 和 `constitution.md` 的 Technology Constraints
@@ -581,10 +581,10 @@ PAYLOAD_SECRET=YOUR_SECRET_HERE
 
 ```bash
 # ===== 開發環境 (Docker PostgreSQL) =====
-DATABASE_URL=postgresql://ivc_user:ivc_password@localhost:5433/ivc_dev
+DATABASE_URL=postgresql://ivco_user:ivco_password@localhost:5433/ivco_dev
 
 # ===== 開發環境 (Docker Compose 容器內) =====
-DATABASE_URL=postgresql://ivc_user:ivc_password@db:5432/ivc_dev
+DATABASE_URL=postgresql://ivco_user:ivco_password@db:5432/ivco_dev
 
 # ===== 生產環境 (Supabase Session Pooler) =====
 DATABASE_URL=postgresql://postgres.[PROJECT_REF]:[PASSWORD]@aws-0-ap-northeast-1.pooler.supabase.com:5432/postgres

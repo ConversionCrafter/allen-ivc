@@ -1,15 +1,19 @@
-# IVC Calculator: The Allen Framework for Intelligent Valuation
+# IVCO: The Allen Framework for Intelligent Valuation
 
-> 全球首創：整合 Graham、Buffett、Fisher、Munger 四位大師理念的智能價值投資估值系統
+> 全球首創：整合 Graham、Buffett、Fisher、Munger 四位大師理念的智能價值投資觀測系統
 
 ## Project Overview
 
 | Item | Value |
 |------|-------|
-| **Project Name** | IVC Calculator (Intrinsic Value Confidence Calculator) |
+| **Project Name** | IVCO (Intrinsic Value Confidence Observatory) |
+| **Brand Persona** | IVCO Fisher (@ivco_fisher) |
 | **Created** | 2026-01-31 |
-| **Status** | Planning |
-| **Path** | `/Users/allenchenmac/AI-Workspace/projects/allen-ivc/` |
+| **Status** | Planning → Pre-Development |
+| **DNA Document** | `docs/ivco-dna.md` — 21 篇研究蒸餾的專案靈魂文件（863 行） |
+| **Path** | `/Users/allenchenmac/AI-Workspace/projects/allen-ivco/` |
+| **Domains** | ivco.io (primary) + ivco.ai (defense) |
+| **GitHub** | ConversionCrafter/allen-ivco |
 
 ## Core Philosophy
 
@@ -22,16 +26,28 @@
 - ✅ 是基於公開資訊的「結構化注意力」
 - ✅ 是輔助大腦進行科學評估的導航系統
 
-## Core Formula
+## Core Formula: Three-Tier Calibration + Three-Stage DCF
 
 ```
-Intrinsic Value = Historical Owner Earnings CAGR × Confidence Coefficient Range
+三層校正管線（Allen Framework 核心）：
+  Layer 1: OE_calibrated = OE × Reality_Coefficient（真實係數，校正歷史 OE 失真）
+  Layer 2: CAGR = f(OE_calibrated)（從校正後 OE 推導成長率）
+  Layer 3: CAGR_adjusted = CAGR × Confidence_Coefficient（信心係數，調整未來展望）
+
+IV_per_share = (DCF_Sum - Long_Term_Debt) / 流通股數
+
+Stage 1（1-5 年）：CAGR_adjusted = Historical_OE_CAGR × Confidence_Coefficient
+Stage 2（6-10 年）：CAGR_moderate（公司專屬保守假設）
+Stage 3（永續）：g_perpetual（公司專屬永續假設）
+折現率 r = 美國十年期公債利率 + ~3% 長期通膨率
 ```
 
-**範例：**
-- 歷史業主盈餘 CAGR = 10%
-- 信心係數區間 = 1.2x ~ 1.4x（基於深入研究的 90% 信心）
-- IV 計算基礎 = 10% × 1.2 ~ 10% × 1.4 = 12% ~ 14% 成長預期
+**TSMC 範例（Allen 實際計算，2026-02-13 校正）：**
+- Historical OE CAGR = 17.66%（9 年）| 維護 CapEx = 20% | 真實係數 = 100%
+- 信心係數 = 1.2x ~ 1.5x → Stage 1 CAGR = 21.19% ~ 26.49%
+- Stage 2 = 15% | Stage 3 = 5% | 折現率 = 8%
+- **IV Range = NT$4,565 ~ NT$5,639 per share**
+- **完整方法論 + 計算：`allen-framework-tsmc-owners-earning.md`（專案根目錄最上位文件）**
 
 ---
 
@@ -151,7 +167,15 @@ Intrinsic Value = Historical Owner Earnings CAGR × Confidence Coefficient Range
 
 階段三：展望因子與 IVC 計算 (Forward Valuation)
 - 動作：勾稽重大資本支出、產品週期與市場擴張
-- 計算：IV = Owner Earnings × Multiple × Confidence Coefficient
+- 校正：三層校正管線 — 真實係數(Reality Coefficient) → CAGR 計算 → 信心係數(CC)
+- 計算：三段式 DCF
+  * Stage 1（1-5 年）：Historical OE × (1 + CAGR×CC)^n，逐年折現
+  * Stage 2（6-10 年）：趨緩保守 CAGR，逐年折現
+  * Stage 3（永續價值）：低成長率永續年金，折現回現值
+  * 折現率 = 美國十年期公債殖利率 + ~3% 長期通膨率
+  * IV Range = (Stage 1 + Stage 2 + Stage 3 - 長期負債) / 流通股數
+- 七個公司專屬參數：維護 CapEx 比率 / 真實係數 / CC 區間 / Stage 2 CAGR / Stage 3 CAGR / 折現率 / 長期負債
+- 參考：`allen-framework-tsmc-owners-earning.md`（專案根目錄最上位文件）
 - 輸出要求：
   * 區間總市值 (Total IV Range)
   * 每股內在價值區間 (IV per Share Range) ← 強制項目
@@ -312,8 +336,8 @@ Supabase (儲存) → n8n (自動化) → Python (計算) → Payload CMS (展�
 
 | 環境 | DATABASE_URL | 說明 |
 |------|-------------|------|
-| 開發 (Docker) | `postgresql://ivc_user:ivc_password@localhost:5433/ivc_dev` | Docker PG 15 |
-| 開發 (Docker 容器內) | `postgresql://ivc_user:ivc_password@db:5432/ivc_dev` | Docker network |
+| 開發 (Docker) | `postgresql://ivco_user:ivco_password@localhost:5433/ivco_dev` | Docker PG 15 |
+| 開發 (Docker 容器內) | `postgresql://ivco_user:ivco_password@db:5432/ivco_dev` | Docker network |
 | 生產 (Supabase) | `postgresql://postgres.[REF]:[PWD]@aws-0-ap-northeast-1.pooler.supabase.com:5432/postgres` | Supavisor Session Pooler IPv4 |
 
 ### 關鍵知識
@@ -345,14 +369,28 @@ Owner Earnings = Net Income
 - 不是淨利，是真正流入股東口袋的現金
 - Maintenance CapEx 需區分「競爭性防禦」vs「擴張性攻擊」
 
-### 信心係數 (Confidence Coefficient)
+### 真實係數 (Reality Coefficient)
 
-| 條件 | 係數範圍 |
-|------|----------|
-| 管理層誠信 100% + 強勁擴張計畫 | 1.3x ~ 1.5x |
-| 管理層誠信 100% + 穩定營運 | 1.1x ~ 1.3x |
-| 管理層誠信 < 100% | 0.8x ~ 1.0x |
-| 誠信污點 | 終止分析 |
+校正歷史 OE 失真，確保 CAGR 計算基礎可靠：
+- **100%**：該年 OE 如實反映營運能力，直接採用
+- **>100%**（如 125%）：該年有一次性損失，OE 偏低，上調還原
+- **<100%**（如 80%）：該年有一次性收益，OE 偏高，下調修正
+- **前期簡易法**：3 年平均端點法（降低單年異常影響）
+- **進階法**：每年 OE 配一個真實係數（隨 IVCO 資料庫成熟而精確化）
+
+### 信心係數 (Confidence Coefficient) — 分級制
+
+CC 乘在 CAGR 上，逐級需要更強證據支撐：
+
+| 等級 | CC 範圍 | 適用條件 | 證據要求 |
+|------|---------|---------|---------|
+| **保守** | 0.8x ~ 1.0x | 誠信 < 100% / 競爭威脅 | 基本財報 |
+| **穩健** | 1.0x ~ 1.5x | 誠信 100% + 穩定至強勁擴張 | 承諾追蹤 + 產能驗證 |
+| **積極** | 1.5x ~ 2.5x | 重大擴張前夜 + 技術領先 | 資本支出時程 + 供應鏈驗證 |
+| **極端** | 2.5x+ | 產能 3 倍擴張 + 隱藏冠軍 | 年報揭露 + 100% 執行力 + 書面論述 |
+| **終止** | N/A | 誠信污點 | 一票否決，終止分析 |
+
+CC 是**動態的**：IVCO 即時追蹤重大事件 → 調整 CC 區間。
 
 ### 生物學護城河
 
@@ -382,7 +420,7 @@ Owner Earnings = Net Income
 ## File Structure (Planned)
 
 ```
-allen-ivc/
+allen-ivco/
 ├── CLAUDE.md              # 專案記憶（本檔案）
 ├── docs/                   # 文件與規格
 │   ├── architecture.md
@@ -396,6 +434,27 @@ allen-ivc/
 ├── cms/                    # Payload CMS 配置
 └── tests/                  # 測試檔案
 ```
+
+---
+
+## Brand & Persona
+
+### IVCO Fisher
+
+> 「I don't predict markets. I study businesses. Noise fades. Facts compound. Intrinsic value is a starting point — not a prophecy.」
+
+| Field | Value |
+|-------|-------|
+| **Name** | IVCO Fisher（致敬 Philip Fisher） |
+| **Born** | 1996-11-08（天蠍座） |
+| **Archetype** | 李錄（Li Lu）— 安靜、長線、非交易員型 |
+| **X** | [@ivco_fisher](https://x.com/ivco_fisher) |
+| **Domain** | ivco.io (primary) + ivco.ai (defense) |
+| **Role** | 對外品牌人格 — IVCO 系統的公開形象 |
+
+**命名由來**：IVC Calculator → IVCO — Observatory 代表「觀測站」，不是交易所，不是機器人。Allen 造字。
+
+**與 Jane 的關係**：Fisher 是品牌（對外），Jane 是協助 Allen 打造品牌的人（對內）。Fisher 呈現系統的公開形象，Jane 負責投資分析的嚴謹性。
 
 ---
 
@@ -418,3 +477,6 @@ allen-ivc/
 | 2026-02-04 | 採用 Tab 式 UI 設計 | Companies Collection 分為 7 個 Tab，避免單一頁面過於擁擠，提升使用體驗 |
 | 2026-02-04 | 實作預測對帳單機制 | Commitments → Integrity Scores 的完整生命週期追蹤，支援管理層執行力評估 |
 | 2026-02-04 | 強制輸出每股價值 | iv_per_share_low/high 標記為必填，避免「只看總市值」的系統性錯誤 |
+| 2026-02-09 | 品牌統一為 IVCO | IVC Calculator → IVCO (Intrinsic Value Confidence Observatory)。IVC 保留為方法論名稱，IVCO 為系統/品牌名。目錄 allen-ivc → allen-ivco，GitHub repo 同步更名 |
+| 2026-02-09 | IVCO Fisher 品牌人設確立 | Fisher = 對外品牌人格，Jane = 協助 Allen 打造品牌的人（對內）。Fisher 致敬 Philip Fisher，生日 1996-11-08 |
+| 2026-02-09 | 域名購買 ivco.io + ivco.ai | ivco.io 為主站，ivco.ai 為防禦性購買 |

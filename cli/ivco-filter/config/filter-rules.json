@@ -1,0 +1,178 @@
+{
+  "version": "1.0.0",
+  "score_threshold": 0,
+  "garbage_rules": {
+    "G1_ticker_spam": {
+      "enabled": true,
+      "description": "5+ ticker symbols = spam",
+      "penalty": -50,
+      "min_tickers": 5,
+      "pattern": "\\$[A-Z]{1,5}"
+    },
+    "G2_promo_keywords": {
+      "enabled": true,
+      "description": "Promotional keywords",
+      "penalty": -40,
+      "keywords": [
+        "join now",
+        "join my",
+        "DM me",
+        "DM for",
+        "whatsapp",
+        "telegram group",
+        "FREE signals",
+        "OFFER",
+        "guaranteed profit",
+        "100x",
+        "1000x",
+        "moon",
+        "rocket",
+        "lambo",
+        "join the",
+        "subscribe",
+        "sign up",
+        "link in bio"
+      ]
+    },
+    "G3_payment_mention": {
+      "enabled": true,
+      "description": "PayPal as payment method (not stock)",
+      "penalty": -30,
+      "keywords": [
+        "pay with paypal",
+        "paypal payment",
+        "accept paypal",
+        "send via paypal",
+        "paypal checkout",
+        "paypal me",
+        "venmo or paypal",
+        "paypal invoice",
+        "paypal link"
+      ]
+    },
+    "G4_short_content": {
+      "enabled": true,
+      "description": "Too short with no analysis keywords",
+      "penalty": -20,
+      "min_chars": 80,
+      "analysis_keywords": [
+        "target",
+        "upgrade",
+        "downgrade",
+        "earnings",
+        "revenue",
+        "eps",
+        "guidance",
+        "oversold",
+        "undervalued",
+        "growth",
+        "margin",
+        "acquisition",
+        "buyback"
+      ]
+    },
+    "G5_background_mention": {
+      "enabled": false,
+      "description": "PYPL as background mention (v2, needs NLP)",
+      "penalty": -15
+    }
+  },
+  "useful_rules": {
+    "U1_analyst_actions": {
+      "enabled": true,
+      "description": "Analyst actions and ratings",
+      "bonus": 30,
+      "keywords": [
+        "price target",
+        "target price",
+        "upgrade",
+        "downgrade",
+        "rating",
+        "outperform",
+        "underperform",
+        "overweight",
+        "underweight",
+        "buy rating",
+        "sell rating",
+        "hold rating",
+        "analyst",
+        "wall street"
+      ]
+    },
+    "U2_earnings": {
+      "enabled": true,
+      "description": "Earnings and financial results",
+      "bonus": 25,
+      "keywords": [
+        "earnings",
+        "revenue",
+        "eps",
+        "guidance",
+        "quarterly",
+        "q1",
+        "q2",
+        "q3",
+        "q4",
+        "beat",
+        "miss",
+        "estimate",
+        "fiscal",
+        "annual report",
+        "10-k",
+        "10-q",
+        "sec filing"
+      ]
+    },
+    "U3_fundamental_analysis": {
+      "enabled": true,
+      "description": "Fundamental analysis terms",
+      "bonus": 20,
+      "keywords": [
+        "oversold",
+        "undervalued",
+        "overvalued",
+        "growth",
+        "margin",
+        "free cash flow",
+        "fcf",
+        "owner earnings",
+        "intrinsic value",
+        "book value",
+        "pe ratio",
+        "p/e",
+        "moat",
+        "competitive advantage",
+        "market share"
+      ]
+    },
+    "U4_major_events": {
+      "enabled": true,
+      "description": "Major corporate events",
+      "bonus": 35,
+      "keywords": [
+        "acquisition",
+        "takeover",
+        "merger",
+        "buyback",
+        "share repurchase",
+        "activist",
+        "spin-off",
+        "spinoff",
+        "ceo",
+        "management change",
+        "board",
+        "restructuring",
+        "layoff",
+        "ipo",
+        "dividend"
+      ]
+    },
+    "U5_whitelist_bonus": {
+      "enabled": true,
+      "description": "Bonus for whitelisted accounts",
+      "bonus": 15
+    }
+  },
+  "blacklist": [],
+  "whitelist": []
+}

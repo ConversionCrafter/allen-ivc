@@ -1,14 +1,14 @@
 #!/usr/bin/env python3
-"""ivc-collect — Store external data into IVC CompanyEvents.
+"""ivco-collect — Store external data into IVCO CompanyEvents.
 
-First atomic CLI tool in the ivc-* namespace.
+First atomic CLI tool in the ivco-* namespace.
 Reads structured JSON (bird, future: news APIs) and POSTs to Payload CMS.
 
 Usage:
-  ivc-collect --help
-  ivc-collect --input tweets.json --company-id 2 --keyword "paypal" --source x-twitter
-  ivc-collect --input tweets.json --company-id 2 --keyword "PYPL" --api http://localhost:3000/api/company-events
-  cat tweets.json | ivc-collect --stdin --company-id 2 --keyword "paypal"
+  ivco-collect --help
+  ivco-collect --input tweets.json --company-id 2 --keyword "paypal" --source x-twitter
+  ivco-collect --input tweets.json --company-id 2 --keyword "PYPL" --api http://localhost:3000/api/company-events
+  cat tweets.json | ivco-collect --stdin --company-id 2 --keyword "paypal"
 
 Input format (bird search --json):
   [{"id": "...", "text": "...", "createdAt": "...", "author": {"username": "...", "name": "..."}}]
@@ -58,7 +58,7 @@ def parse_bird_tweet(tweet: dict, keyword: str, company_id: int) -> dict:
         "raw_content": f"@{username} ({name}): {text}",
         "source_url": url,
         "keywords": keyword,
-        "ivc_impact": "pending",
+        "ivco_impact": "pending",
     }
 
 
@@ -84,8 +84,8 @@ def post_event(api_url: str, event: dict) -> bool:
 
 def main():
     parser = argparse.ArgumentParser(
-        prog="ivc-collect",
-        description="Store external data (tweets, news) into IVC CompanyEvents.",
+        prog="ivco-collect",
+        description="Store external data (tweets, news) into IVCO CompanyEvents.",
     )
     parser.add_argument("--input", help="Path to JSON results file (bird search --json)")
     parser.add_argument("--stdin", action="store_true", help="Read JSON from stdin")

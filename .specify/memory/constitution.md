@@ -15,17 +15,17 @@
     - .specify/templates/agent-file-template.md — no constitution-specific refs ✅ ok
   Propagated to:
     - ~/.claude/CLAUDE.md — AI Agent Security DNA section added ✅
-    - IVC CLAUDE.md — Chi security responsibilities added ✅
+    - IVCO CLAUDE.md — Chi security responsibilities added ✅
   Deferred TODOs: none
 -->
 
-# IVC Calculator Constitution
+# IVCO Constitution
 
 ## Core Principles
 
 ### I. CLI-First DNA
 
-Every capability MUST be exposed as an atomic CLI tool (`ivc-*` namespace)
+Every capability MUST be exposed as an atomic CLI tool (`ivco-*` namespace)
 before being wrapped in UI, API, or agent orchestration.
 
 - Each CLI tool MUST have a single responsibility.

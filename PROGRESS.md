@@ -1,4 +1,4 @@
-# IVC Calculator - Progress Log
+# IVCO - Progress Log
 
 > 記錄每日開發進度與關鍵決策
 
@@ -7,7 +7,7 @@
 ## 2026-02-04 (Day 3)
 
 ### 🎯 今日目標
-設計並實作 Payload CMS 數據架構，建立 IVC Calculator 的數據基礎設施
+設計並實作 Payload CMS 數據架構，建立 IVCO 的數據基礎設施
 
 ### ✅ 完成事項
 
@@ -96,7 +96,7 @@
 
 #### 優先級 P0：測試 Companies Collection
 ```bash
-cd /Users/allenchenmac/AI-Workspace/projects/allen-ivc/cms
+cd /Users/allenchenmac/AI-Workspace/projects/allen-ivco/cms
 npm run dev
 open http://localhost:3000/admin
 ```
@@ -125,12 +125,12 @@ open http://localhost:3000/admin
 ## 2026-02-03 (Day 2)
 
 ### 🎯 今日目標
-深度討論 IVC Calculator 系統架構
+深度討論 IVCO 系統架構
 
 ### ✅ 完成事項
 - ✅ 定義五層系統架構（信息採集→AI判斷→動態IV更新→用戶交互→對帳學習）
 - ✅ 設計 Playground 交互模式（受 Claude Code Plugin 啟發）
-- ✅ 定義 CLI Tools 優先開發清單（P0: ivc-integrity, ivc-fetch, ivc-calc...）
+- ✅ 定義 CLI Tools 優先開發清單（P0: ivco-integrity, ivco-fetch, ivco-calc...）
 - ✅ 分析 PayPal 商業模式與股價反轉信號（手機 APP 對話）
 
 ### 📝 備註
@@ -144,7 +144,7 @@ open http://localhost:3000/admin
 專案啟動與框架定義
 
 ### ✅ 完成事項
-- ✅ 專案命名：IVC Calculator (Intrinsic Value Confidence Calculator)
+- ✅ 專案命名：IVCO (Intrinsic Value Confidence Calculator)
 - ✅ 確立三層架構：Framework / Perception / Judgment
 - ✅ 定義核心公式：IV = Historical OE CAGR × Confidence Coefficient
 - ✅ 建立團隊角色：Allen (創辦人)、Jane (反面意見執行官)、Chi (AI 工程師)

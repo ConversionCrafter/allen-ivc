@@ -1,0 +1,5 @@
+Metadata-Version: 2.4
+Name: ivco-filter
+Version: 0.1.0
+Summary: Score and filter X/Twitter tweets for IVCO relevance
+Requires-Python: >=3.10
