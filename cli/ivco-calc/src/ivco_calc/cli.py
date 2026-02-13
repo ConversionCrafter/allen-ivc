@@ -2,6 +2,7 @@
 import click
 import json
 from ivco_calc.owner_earnings import calc_owner_earnings
+from ivco_calc.cagr import calc_cagr
 
 @click.group()
 @click.version_option(version="0.1.0")
@@ -38,6 +39,20 @@ def calc_oe_cmd(net_income, depreciation, amortization, capex, maintenance_ratio
             "maintenance_capex_ratio": maintenance_ratio
         }
     })
+
+@cli.command("calc-cagr")
+@click.option("--start-oe", type=int, required=True)
+@click.option("--end-oe", type=int, required=True)
+@click.option("--start-year", type=int, required=True)
+@click.option("--end-year", type=int, required=True)
+@click.option("--rc-start", type=float, default=1.0)
+@click.option("--rc-end", type=float, default=1.0)
+def calc_cagr_cmd(start_oe, end_oe, start_year, end_year, rc_start, rc_end):
+    """Calculate CAGR from Owner Earnings with Reality Coefficient."""
+    oe_series = [{"year": start_year, "oe": start_oe}, {"year": end_year, "oe": end_oe}]
+    rc = {start_year: rc_start, end_year: rc_end}
+    result = calc_cagr(oe_series=oe_series, reality_coefficients=rc)
+    output_json(result)
 
 if __name__ == "__main__":
     cli()
