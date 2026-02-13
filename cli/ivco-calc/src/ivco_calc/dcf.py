@@ -80,6 +80,14 @@ def calc_three_stage_dcf(
     Returns:
         Dict with full DCF breakdown and IV Range.
     """
+    if discount_rate <= stage3_cagr:
+        raise ValueError(
+            f"discount_rate ({discount_rate}) must exceed stage3_cagr ({stage3_cagr}) "
+            "for Gordon Growth Model perpetuity"
+        )
+    if shares_outstanding_raw <= 0:
+        raise ValueError(f"shares_outstanding_raw must be positive, got {shares_outstanding_raw}")
+
     stage1_cagr_low = cagr * cc_low
     stage1_cagr_high = cagr * cc_high
 
