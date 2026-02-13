@@ -71,6 +71,8 @@ export interface Config {
     media: Media;
     companies: Company;
     'company-events': CompanyEvent;
+    categories: Category;
+    posts: Post;
     'payload-kv': PayloadKv;
     'payload-locked-documents': PayloadLockedDocument;
     'payload-preferences': PayloadPreference;
@@ -82,6 +84,8 @@ export interface Config {
     media: MediaSelect<false> | MediaSelect<true>;
     companies: CompaniesSelect<false> | CompaniesSelect<true>;
     'company-events': CompanyEventsSelect<false> | CompanyEventsSelect<true>;
+    categories: CategoriesSelect<false> | CategoriesSelect<true>;
+    posts: PostsSelect<false> | PostsSelect<true>;
     'payload-kv': PayloadKvSelect<false> | PayloadKvSelect<true>;
     'payload-locked-documents': PayloadLockedDocumentsSelect<false> | PayloadLockedDocumentsSelect<true>;
     'payload-preferences': PayloadPreferencesSelect<false> | PayloadPreferencesSelect<true>;
@@ -365,7 +369,58 @@ export interface CompanyEvent {
   /**
    * 此事件對 IVC 信心係數的潛在影響方向
    */
-  ivc_impact?: ('positive' | 'neutral' | 'negative' | 'pending') | null;
+  ivco_impact?: ('positive' | 'neutral' | 'negative' | 'pending') | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "categories".
+ */
+export interface Category {
+  id: number;
+  name: string;
+  /**
+   * URL-friendly name (e.g. value-investing)
+   */
+  slug: string;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "posts".
+ */
+export interface Post {
+  id: number;
+  title: string;
+  /**
+   * URL path (e.g. tsmc-intrinsic-value-2026)
+   */
+  slug: string;
+  content: {
+    root: {
+      type: string;
+      children: {
+        type: any;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  };
+  /**
+   * SEO description and preview text (max 160 chars)
+   */
+  excerpt?: string | null;
+  category?: (number | null) | Category;
+  coverImage?: (number | null) | Media;
+  status: 'draft' | 'published';
+  publishedAt?: string | null;
   updatedAt: string;
   createdAt: string;
 }
@@ -408,6 +463,14 @@ export interface PayloadLockedDocument {
     | ({
         relationTo: 'company-events';
         value: number | CompanyEvent;
+      } | null)
+    | ({
+        relationTo: 'categories';
+        value: number | Category;
+      } | null)
+    | ({
+        relationTo: 'posts';
+        value: number | Post;
       } | null);
   globalSlug?: string | null;
   user: {
@@ -543,7 +606,33 @@ export interface CompanyEventsSelect<T extends boolean = true> {
   raw_content?: T;
   source_url?: T;
   keywords?: T;
-  ivc_impact?: T;
+  ivco_impact?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "categories_select".
+ */
+export interface CategoriesSelect<T extends boolean = true> {
+  name?: T;
+  slug?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "posts_select".
+ */
+export interface PostsSelect<T extends boolean = true> {
+  title?: T;
+  slug?: T;
+  content?: T;
+  excerpt?: T;
+  category?: T;
+  coverImage?: T;
+  status?: T;
+  publishedAt?: T;
   updatedAt?: T;
   createdAt?: T;
 }
