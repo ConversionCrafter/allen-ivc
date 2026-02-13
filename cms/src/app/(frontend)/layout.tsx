@@ -1,18 +1,29 @@
 import React from 'react'
-import './styles.css'
+import './globals.css'
 
 export const metadata = {
-  description: 'A blank template using Payload in a Next.js app.',
-  title: 'Payload Blank Template',
+  title: 'IVCO Fisher — Value Investing Observatory',
+  description:
+    'Intrinsic Value Confidence Observatory. Facts compound. Noise fades.',
 }
 
-export default async function RootLayout(props: { children: React.ReactNode }) {
-  const { children } = props
-
+export default async function RootLayout({
+  children,
+}: {
+  children: React.ReactNode
+}) {
   return (
     <html lang="en">
       <body>
+        <header>
+          <nav>
+            <a href="/">IVCO Fisher</a>
+          </nav>
+        </header>
         <main>{children}</main>
+        <footer>
+          <p>&copy; {new Date().getFullYear()} IVCO Fisher</p>
+        </footer>
       </body>
     </html>
   )
