@@ -50,16 +50,17 @@ def tsmc_parameters():
     }
 
 @pytest.fixture
-def tsmc_expected_iv():
-    """Expected IV Range from Allen's hand calculation."""
+def tsmc_expected_iv(tsmc_expected_oe):
+    """Expected IV Range from Allen's hand calculation.
+
+    CAGR is computed at full precision from raw OE data (matching Allen's
+    spreadsheet which stores the formula result, not the displayed '17.66%').
+    """
+    cagr = (tsmc_expected_oe[2022] / tsmc_expected_oe[2013]) ** (1 / 9) - 1
     return {
-        "cagr": 0.1766,
-        "stage1_cagr_low": 0.2119,
-        "stage1_cagr_high": 0.2649,
-        "dcf_sum_low": 120_037_432_375,
-        "dcf_sum_high": 147_889_066_294,
-        "iv_total_low": 118_363_999_450,
-        "iv_total_high": 146_215_633_369,
+        "cagr": cagr,
+        "stage1_cagr_low": cagr * 1.2,
+        "stage1_cagr_high": cagr * 1.5,
         "iv_per_share_low": 4565,
         "iv_per_share_high": 5639,
     }

@@ -19,7 +19,7 @@ def calc_cagr(
         raise ValueError("Start OE must be positive")
     cagr = (end_calibrated / start_calibrated) ** (1 / periods) - 1
     return {
-        "cagr": round(cagr, 4),
+        "cagr": cagr,
         "start_year": start["year"],
         "end_year": end["year"],
         "periods": periods,

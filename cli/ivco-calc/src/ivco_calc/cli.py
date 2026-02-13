@@ -3,6 +3,7 @@ import click
 import json
 from ivco_calc.owner_earnings import calc_owner_earnings
 from ivco_calc.cagr import calc_cagr
+from ivco_calc.dcf import calc_three_stage_dcf
 
 @click.group()
 @click.version_option(version="0.1.0")
@@ -52,6 +53,34 @@ def calc_cagr_cmd(start_oe, end_oe, start_year, end_year, rc_start, rc_end):
     oe_series = [{"year": start_year, "oe": start_oe}, {"year": end_year, "oe": end_oe}]
     rc = {start_year: rc_start, end_year: rc_end}
     result = calc_cagr(oe_series=oe_series, reality_coefficients=rc)
+    output_json(result)
+
+@cli.command("calc-iv")
+@click.option("--latest-oe", type=int, required=True)
+@click.option("--cagr", type=float, required=True)
+@click.option("--cc-low", type=float, required=True)
+@click.option("--cc-high", type=float, required=True)
+@click.option("--stage2-cagr", type=float, required=True)
+@click.option("--stage3-cagr", type=float, required=True)
+@click.option("--discount-rate", type=float, required=True)
+@click.option("--long-term-debt", type=int, required=True)
+@click.option("--shares-outstanding", type=int, required=True)
+@click.option("--share-par-value", type=int, default=10)
+def calc_iv_cmd(latest_oe, cagr, cc_low, cc_high, stage2_cagr, stage3_cagr,
+                discount_rate, long_term_debt, shares_outstanding, share_par_value):
+    """Calculate Intrinsic Value using Three-Stage DCF."""
+    result = calc_three_stage_dcf(
+        latest_oe=latest_oe,
+        cagr=cagr,
+        cc_low=cc_low,
+        cc_high=cc_high,
+        stage2_cagr=stage2_cagr,
+        stage3_cagr=stage3_cagr,
+        discount_rate=discount_rate,
+        long_term_debt=long_term_debt,
+        shares_outstanding_raw=shares_outstanding,
+        share_par_value=share_par_value,
+    )
     output_json(result)
 
 if __name__ == "__main__":
