@@ -1,0 +1,11 @@
+pyproject.toml
+src/ivco_filter/__init__.py
+src/ivco_filter/cli.py
+src/ivco_filter/lists.py
+src/ivco_filter/rules.py
+src/ivco_filter/scorer.py
+src/ivco_filter.egg-info/PKG-INFO
+src/ivco_filter.egg-info/SOURCES.txt
+src/ivco_filter.egg-info/dependency_links.txt
+src/ivco_filter.egg-info/entry_points.txt
+src/ivco_filter.egg-info/top_level.txt

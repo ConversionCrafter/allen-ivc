@@ -1,0 +1,2 @@
+[console_scripts]
+ivco-filter = ivco_filter.cli:main

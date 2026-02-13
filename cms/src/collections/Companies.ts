@@ -5,7 +5,7 @@ export const Companies: CollectionConfig = {
   admin: {
     useAsTitle: 'name',
     defaultColumns: ['name', 'ticker', 'status', 'updatedAt'],
-    group: 'IVC Calculator',
+    group: 'IVCO',
   },
   access: {
     read: () => true,

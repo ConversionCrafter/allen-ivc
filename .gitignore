@@ -4,5 +4,9 @@
 .env.backup
 scripts/.env.bird
 
+# Python
+__pycache__/
+*.pyc
+
 # OS
 .DS_Store

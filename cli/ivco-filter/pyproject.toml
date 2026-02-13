@@ -1,0 +1,15 @@
+[build-system]
+requires = ["setuptools>=68.0"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "ivco-filter"
+version = "0.1.0"
+description = "Score and filter X/Twitter tweets for IVCO relevance"
+requires-python = ">=3.10"
+
+[project.scripts]
+ivco-filter = "ivco_filter.cli:main"
+
+[tool.setuptools.packages.find]
+where = ["src"]

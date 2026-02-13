@@ -1,4 +1,4 @@
-# IVC Calculator - TODO & Progress Tracker
+# IVCO - TODO & Progress Tracker
 
 > Last Updated: 2026-02-04 23:00
 > Next Session: 2026-02-05 (明天開始)
@@ -18,7 +18,7 @@
 **Steps**:
 ```bash
 # 1. 進入 CMS 目錄
-cd /Users/allenchenmac/AI-Workspace/projects/allen-ivc/cms
+cd /Users/allenchenmac/AI-Workspace/projects/allen-ivco/cms
 
 # 2. 啟動開發服務器
 npm run dev
@@ -132,7 +132,7 @@ cat .env | grep DATABASE_URL
 **Depends On**: Companies Collection ✅
 
 **Context**:
-估值記錄是 IVC Calculator 的核心，記錄每次 IV 計算的完整過程。
+估值記錄是 IVCO 的核心，記錄每次 IV 計算的完整過程。
 
 **Schema Reference**:
 參考 `/schemas/payload-cms-schema.md` 中的 "2. Valuations Collection"
@@ -287,7 +287,7 @@ Stress Test Result:
 
 ## 🛠️ Phase 3: CLI Tools (並行開發)
 
-### 🔲 TODO: ivc-calc CLI
+### 🔲 TODO: ivco-calc CLI
 
 **Priority**: P0 (與 Payload 並行)
 **Language**: Python
@@ -328,12 +328,12 @@ def calculate_iv(
 
 **Usage**:
 ```bash
-ivc-calc --oe 1200000 --cagr 15.5 --conf-low 1.2 --conf-high 1.4 --shares 25900
+ivco-calc --oe 1200000 --cagr 15.5 --conf-low 1.2 --conf-high 1.4 --shares 25900
 ```
 
 **Expected Output**:
 ```
-IVC Calculation Results
+IVCO Calculation Results
 =======================
 Input:
   Historical OE: $1,200,000M
@@ -351,7 +351,7 @@ Recommendation:
 
 ---
 
-### 🔲 TODO: ivc-fetch CLI
+### 🔲 TODO: ivco-fetch CLI
 
 **Priority**: P1
 **Language**: Python
@@ -420,5 +420,5 @@ Recommendation:
 - Payload CMS Docs: https://payloadcms.com/docs
 - Supabase Docs: https://supabase.com/docs
 - SEC EDGAR: https://www.sec.gov/edgar
-- IVC Framework 完整說明: `/allen-ivc/CLAUDE.md`
-- Schema 設計文檔: `/allen-ivc/schemas/payload-cms-schema.md`
+- IVC Framework 完整說明: `/allen-ivco/CLAUDE.md`
+- Schema 設計文檔: `/allen-ivco/schemas/payload-cms-schema.md`

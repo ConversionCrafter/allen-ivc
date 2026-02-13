@@ -5,7 +5,7 @@ export const CompanyEvents: CollectionConfig = {
   admin: {
     useAsTitle: 'title',
     defaultColumns: ['title', 'company', 'source', 'importance', 'event_date'],
-    group: 'IVC Calculator',
+    group: 'IVCO',
   },
   access: {
     read: () => true,
@@ -99,9 +99,9 @@ export const CompanyEvents: CollectionConfig = {
       },
     },
     {
-      name: 'ivc_impact',
+      name: 'ivco_impact',
       type: 'select',
-      label: 'IVC 影響',
+      label: 'IVCO 影響',
       options: [
         { label: '⬆️ 正面（提升信心係數）', value: 'positive' },
         { label: '➡️ 中性', value: 'neutral' },

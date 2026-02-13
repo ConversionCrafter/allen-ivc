@@ -1,4 +1,4 @@
-# IVC Calculator - Payload CMS Collection Schemas
+# IVCO - Payload CMS Collection Schemas
 
 > Version: 1.0.0
 > Date: 2026-02-04
